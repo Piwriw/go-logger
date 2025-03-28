@@ -22,6 +22,7 @@ linters:
     - goconst # 常量检查
     - ineffassign # 无效赋值检查
     - whitespace # 检查代码中的空格
+    - errname # 错误命名检查
   disable:
     - lll  # 关闭 `lll` 以避免长行限制
     - unused # 关闭 `unused` 以避免未使用变量的检查
