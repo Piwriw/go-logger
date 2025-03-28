@@ -310,7 +310,7 @@ func TestKlogLoggerWithLogRotation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 1000; i++ {
 		logger.Info("Info:hello world")
 		logger.Infof("Infof:%v", "hello world")
 		logger.Warn("warn:", "hello world")

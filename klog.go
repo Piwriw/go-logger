@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"k8s.io/klog/v2"
 	"os"
+
+	"k8s.io/klog/v2"
 )
 
 type klogLogger struct {
