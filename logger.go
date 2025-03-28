@@ -118,20 +118,29 @@ type Options struct {
 	// 其他配置项...
 }
 
+// WithLevel 设置日志级别
+// 默认为 InfoLevel
 func WithLevel(level Level) Option {
 	return func(o *Options) {
 		o.Level = level
 	}
 }
 
+// WithJSONFormat 以JSON格式输出日志
+// Klog不支持
 func WithJSONFormat() Option {
 	return func(o *Options) {
 		o.JSONFormat = true
 	}
 }
 
+// WithFileOutput 设置日志文件路径
+// 默认为 ./app.log
 func WithFileOutput(path string) Option {
 	return func(o *Options) {
+		if path == "" {
+			path = defaultLogFile
+		}
 		o.FilePath = path
 	}
 }
@@ -157,6 +166,9 @@ func WithTimeFormat(format string) Option {
 // Zap 默认开启Error日志的堆栈打印，Logrus 默认关闭
 func WithErrorOutPut(path string) Option {
 	return func(o *Options) {
+		if path == "" {
+			path = defaultErrorOutput
+		}
 		o.ErrorOutput = path
 	}
 }
