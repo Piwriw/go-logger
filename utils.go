@@ -1,9 +1,17 @@
 package logger
 
 import (
+	"fmt"
 	"io"
 	"os"
+	"path"
+	"runtime"
 )
+
+func getCaller(callNum int) string {
+	_, file, line, _ := runtime.Caller(callNum)
+	return fmt.Sprintf("%s:%d", path.Base(file), line)
+}
 
 func getFilePathOutputs(filePaths ...string) io.Writer {
 	if len(filePaths) == 0 {

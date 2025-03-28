@@ -5,8 +5,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
-	"path"
-	"runtime"
 )
 
 //var defaultCallerPrettyfierFunc = func(f *runtime.Frame) (string, string) {
@@ -103,11 +101,6 @@ func FromLogrusLoggerLevel(level logrus.Level) Level {
 	}
 }
 
-func getCaller() string {
-	_, file, line, _ := runtime.Caller(3)
-	return fmt.Sprintf("%s:%d", path.Base(file), line)
-}
-
 func (l *logrusLogger) log(level logrus.Level, args ...any) {
 	msg := fmt.Sprint(args...)
 
@@ -121,7 +114,7 @@ func (l *logrusLogger) log(level logrus.Level, args ...any) {
 
 	if l.AddSource {
 		l.logger.WithFields(logrus.Fields{
-			"source": getCaller(),
+			"source": getCaller(3),
 		}).Log(level, msg)
 		return
 	}
@@ -129,7 +122,7 @@ func (l *logrusLogger) log(level logrus.Level, args ...any) {
 	l.logger.Log(level, msg)
 	if l.errorLogger != nil && level >= logrus.ErrorLevel {
 		l.errorLogger.WithFields(logrus.Fields{
-			"source": getCaller(),
+			"source": getCaller(3),
 		}).Log(level, msg)
 	}
 }
