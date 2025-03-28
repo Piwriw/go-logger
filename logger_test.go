@@ -8,7 +8,6 @@ import (
 func TestZapLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(ZapLogger)
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -22,7 +21,6 @@ func TestZapLogger(t *testing.T) {
 func TestZapLoggerWithLevel(t *testing.T) {
 	logger, err := NewLoggerWithType(ZapLogger, WithLevel(ErrorLevel))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -36,7 +34,6 @@ func TestZapLoggerWithLevel(t *testing.T) {
 func TestZapLoggerWithAddSource(t *testing.T) {
 	logger, err := NewLoggerWithType(ZapLogger, WithAddSource())
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -50,7 +47,6 @@ func TestZapLoggerWithAddSource(t *testing.T) {
 func TestZapLoggerWithFileOutput(t *testing.T) {
 	logger, err := NewLoggerWithType(ZapLogger, WithFileOutput("./zap.log"))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -64,7 +60,6 @@ func TestZapLoggerWithFileOutput(t *testing.T) {
 func TestZapLoggerWithJSONFormat(t *testing.T) {
 	logger, err := NewLoggerWithType(ZapLogger, WithJSONFormat())
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -78,7 +73,6 @@ func TestZapLoggerWithJSONFormat(t *testing.T) {
 func TestZapLoggerWithTimeFormat(t *testing.T) {
 	logger, err := NewLoggerWithType(ZapLogger, WithTimeFormat(time.DateTime))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -131,7 +125,6 @@ func TestLogrusLogger(t *testing.T) {
 func TestLogrusLoggerWithLevel(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger, WithLevel(ErrorLevel))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -145,7 +138,6 @@ func TestLogrusLoggerWithLevel(t *testing.T) {
 func TestLogrusLoggerWithAddSource(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger, WithAddSource())
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -159,7 +151,6 @@ func TestLogrusLoggerWithAddSource(t *testing.T) {
 func TestLogrusLoggerWithFileOutput(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger, WithFileOutput("./logger2.log"))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -173,7 +164,6 @@ func TestLogrusLoggerWithFileOutput(t *testing.T) {
 func TestLogrusLoggeWithJSONFormat(t *testing.T) {
 	logger, err := NewLoggerWithType(ZapLogger, WithJSONFormat())
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -187,7 +177,6 @@ func TestLogrusLoggeWithJSONFormat(t *testing.T) {
 func TestLogrusLoggrWithTimeFormat(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger, WithTimeFormat(time.DateTime))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -201,7 +190,6 @@ func TestLogrusLoggrWithTimeFormat(t *testing.T) {
 func TestLogrusLoggerWithFields(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger)
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	loggerFiled := logger.WithFields(map[string]any{"key": "value"})
@@ -216,7 +204,6 @@ func TestLogrusLoggerWithFields(t *testing.T) {
 func TestLogrusLoggerWithErrorOutPut(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger, WithErrorOutPut("./loggerout.log"), WithFileOutput("./sss"))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -243,7 +230,6 @@ func TestLogrusLoggerWithColor(t *testing.T) {
 func TestSlogLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger)
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -257,7 +243,6 @@ func TestSlogLogger(t *testing.T) {
 func TestSlogLoggerWithLevel(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger, WithAddSource(), WithLevel(ErrorLevel))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -271,7 +256,6 @@ func TestSlogLoggerWithLevel(t *testing.T) {
 func TestSlogLoggerWithAddSource(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger, WithAddSource())
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -285,7 +269,6 @@ func TestSlogLoggerWithAddSource(t *testing.T) {
 func TestSlogLoggerWithFileOutput(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger, WithFileOutput("./logger.log"))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -299,7 +282,6 @@ func TestSlogLoggerWithFileOutput(t *testing.T) {
 func TestSlogLoggerWithJSONFormat(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger, WithJSONFormat())
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -313,7 +295,6 @@ func TestSlogLoggerWithJSONFormat(t *testing.T) {
 func TestSlogLoggerWithTimeFormat(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger, WithTimeFormat(time.Stamp))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	logger.Info("Info:hello world")
@@ -327,7 +308,6 @@ func TestSlogLoggerWithTimeFormat(t *testing.T) {
 func TestSlogLoggerWithFields(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger, WithTimeFormat(time.Stamp))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	loggerFiled := logger.WithFields(map[string]any{"key": "value"})
@@ -342,7 +322,6 @@ func TestSlogLoggerWithFields(t *testing.T) {
 func TestSlogLoggerWithErrorOutPut(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger, WithErrorOutPut("./loggerout.log"))
 	if err != nil {
-
 		t.Fatal(err)
 	}
 	loggerFiled := logger.WithFields(map[string]any{"key": "value"})
