@@ -53,6 +53,7 @@ const (
 	SlogLogger   LoggerType = "slog"   // 默认使用slog
 	ZapLogger    LoggerType = "zap"    // 可选
 	LogrusLogger LoggerType = "logrus" // 可选
+	KlogLogger   LoggerType = "klog"
 )
 
 // NewLogger 创建一个新的Logger实例，默认使用slog
@@ -83,6 +84,8 @@ func NewLoggerWithType(loggerType LoggerType, options ...Option) (Logger, error)
 		return newZapLogger(opts)
 	case LogrusLogger:
 		return newLogrusLogger(opts)
+	case KlogLogger:
+		return newKlogLogger(opts)
 	default:
 		return nil, fmt.Errorf("unknown logger type: %s", loggerType)
 	}
@@ -133,6 +136,9 @@ func WithFileOutput(path string) Option {
 	}
 }
 
+// WithAddSource 打印日志函数调用信息
+// 默认为 false，不打印
+// klog 默认支持
 func WithAddSource() Option {
 	return func(o *Options) {
 		o.AddSource = true

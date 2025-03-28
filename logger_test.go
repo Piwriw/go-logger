@@ -227,6 +227,71 @@ func TestLogrusLoggerWithColor(t *testing.T) {
 	logger.Errorf("error:%v", "hello world")
 }
 
+func TestKlogLogger(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger)
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warn:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
+func TestKlogLoggerWithLevel(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithLevel(ErrorLevel))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warn:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
+func TestKlogLoggerWithFileOutput(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithFileOutput("./app.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warn:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
+func TestKlogLoggerWithErrorOutPut(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithErrorOutPut("./app_error.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
+func TestKlogLoggerWithErrorOutPutAndFile(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithFileOutput("./app.log"), WithErrorOutPut("./app_error.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
 func TestSlogLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger)
 	if err != nil {
