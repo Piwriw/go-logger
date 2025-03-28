@@ -305,6 +305,21 @@ func TestKlogLoggerWithColor(t *testing.T) {
 	logger.Errorf("errorf:%v", "hello world")
 }
 
+func TestKlogLoggerWithLogRotation(t *testing.T) {
+	logger, err := NewLoggerWithType(SlogLogger, WithLogRotation("app.log", 1, 5, 0, true))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 1; i++ {
+		logger.Info("Info:hello world")
+		logger.Infof("Infof:%v", "hello world")
+		logger.Warn("warn:", "hello world")
+		logger.Warnf("warnf:%v", "hello world")
+		logger.Error("error:", "hello world")
+		logger.Errorf("errorf:%v", "hello world")
+	}
+}
+
 func TestSlogLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger)
 	if err != nil {

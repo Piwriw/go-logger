@@ -3,6 +3,7 @@ package logger
 import (
 	"flag"
 	"fmt"
+	"io"
 	"k8s.io/klog/v2"
 	"os"
 )
@@ -19,12 +20,30 @@ var _ Logger = (*klogLogger)(nil)
 
 func newKlogLogger(opts Options) (Logger, error) {
 	klog.InitFlags(flag.CommandLine)
+	var ioWriters []io.Writer
 
 	if opts.FilePath != "" {
+		ioWriters = append(ioWriters, getOutput(opts.FilePath))
 		klog.SetOutput(getOutput(opts.FilePath))
+	}
+	var logRotation *LogRotation
+	// 设置日志轮转
+	if opts.LogRotation != nil {
+		logRotation = initLogRotation(opts.LogRotation.FilePath,
+			opts.LogRotation.MaxSize,
+			opts.LogRotation.MaxAge,
+			opts.LogRotation.MaxBackups,
+			opts.LogRotation.Compress)
+		ioWriters = append(ioWriters, logRotation.logger)
+		multiWriter := io.MultiWriter(ioWriters...)
+		klog.SetOutput(multiWriter)
 	}
 	klog.LogToStderr(false)
 	if opts.ErrorOutput != "" {
+		if logRotation != nil {
+			multiWriter := io.MultiWriter(getOutput(opts.ErrorOutput), logRotation.logger)
+			klog.SetOutputBySeverity("ERROR", multiWriter)
+		}
 		klog.SetOutputBySeverity("ERROR", getOutput(opts.ErrorOutput))
 	}
 	if err := flag.CommandLine.Set("one_output", "true"); err != nil {
