@@ -138,7 +138,7 @@ func WithFileOutput(path string) Option {
 
 // WithAddSource 打印日志函数调用信息
 // 默认为 false，不打印
-// klog 默认支持
+// klog 不开启，会打印同一行日志，无法区分日志来源
 func WithAddSource() Option {
 	return func(o *Options) {
 		o.AddSource = true
