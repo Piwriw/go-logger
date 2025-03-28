@@ -13,7 +13,7 @@ func TestZapLogger(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -26,7 +26,7 @@ func TestZapLoggerWithLevel(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -39,7 +39,7 @@ func TestZapLoggerWithAddSource(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -52,7 +52,7 @@ func TestZapLoggerWithFileOutput(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -65,7 +65,7 @@ func TestZapLoggerWithJSONFormat(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -78,7 +78,7 @@ func TestZapLoggerWithTimeFormat(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -91,7 +91,7 @@ func TestZapLoggerWithErrorOutPut(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -104,7 +104,7 @@ func TestZapLoggerWithColor(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -117,7 +117,7 @@ func TestLogrusLogger(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -130,7 +130,7 @@ func TestLogrusLoggerWithLevel(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -143,7 +143,7 @@ func TestLogrusLoggerWithAddSource(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -156,7 +156,7 @@ func TestLogrusLoggerWithFileOutput(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -169,7 +169,7 @@ func TestLogrusLoggeWithJSONFormat(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -182,7 +182,7 @@ func TestLogrusLoggrWithTimeFormat(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -209,7 +209,7 @@ func TestLogrusLoggerWithErrorOutPut(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -222,7 +222,7 @@ func TestLogrusLoggerWithColor(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -235,7 +235,7 @@ func TestKlogLogger(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -248,7 +248,7 @@ func TestKlogLoggerWithLevel(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -261,7 +261,7 @@ func TestKlogLoggerWithFileOutput(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -292,6 +292,19 @@ func TestKlogLoggerWithErrorOutPutAndFile(t *testing.T) {
 	logger.Errorf("errorf:%v", "hello world")
 }
 
+func TestKlogLoggerWithColor(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithColor(), WithFileOutput("./logger.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("errorf:%v", "hello world")
+}
+
 func TestSlogLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(SlogLogger)
 	if err != nil {
@@ -300,7 +313,7 @@ func TestSlogLogger(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:%v", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -313,7 +326,7 @@ func TestSlogLoggerWithLevel(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -326,7 +339,7 @@ func TestSlogLoggerWithAddSource(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -339,7 +352,7 @@ func TestSlogLoggerWithFileOutput(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -352,7 +365,7 @@ func TestSlogLoggerWithJSONFormat(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -365,7 +378,7 @@ func TestSlogLoggerWithTimeFormat(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -407,7 +420,7 @@ func TestSlogLoggerWithLogRotation(t *testing.T) {
 		logger.Info("Info:hello world")
 		logger.Infof("Infof:%v", "hello world")
 		logger.Warn("warn:", "hello world")
-		logger.Warnf("warn:%v", "hello world")
+		logger.Warnf("warnf:%v", "hello world")
 		logger.Error("error:", "hello world")
 		logger.Errorf("errorf:%v", "hello world")
 	}
@@ -421,7 +434,7 @@ func TestSlogLoggeWithColor(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
@@ -440,7 +453,7 @@ func TestSlogLoggeWithColorTheme(t *testing.T) {
 	logger.Info("Info:hello world")
 	logger.Infof("Infof:%v", "hello world")
 	logger.Warn("warn:", "hello world")
-	logger.Warnf("warn:%v", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("errorf:%v", "hello world")
 }
