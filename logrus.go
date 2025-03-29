@@ -2,9 +2,10 @@ package logger
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"io"
 	"os"
+
+	"github.com/sirupsen/logrus"
 )
 
 //var defaultCallerPrettyfierFunc = func(f *runtime.Frame) (string, string) {
