@@ -6,6 +6,8 @@ GOIMPORTS_VERSION ?= v0.25.0
 
 # Go 相关环境变量
 GOBIN ?= $(shell go env GOPATH)/bin
+GOIMPORTS ?= goimports
+GOFMT ?= gofmt
 
 # 检查是否安装了 golangci-lint
 GOLANGCI_LINT ?= $(shell which golangci-lint || echo "$(GOBIN)/golangci-lint")
@@ -36,11 +38,13 @@ install-goimports:
 		echo "goimports already installed"; \
 	fi
 
-# 运行 goimports 格式化代码
-format: install-goimports
+# 运行 goimports 和 gofmt 格式化代码
+format:
 	@echo "Running goimports..."
 	@$(GOIMPORTS) -w .
-
+	@echo "Running gofmt..."
+	@$(GOFMT) -w .
+	@echo "Code formatting completed."
 # 清理临时文件
 clean:
 	@rm -rf ./tmp
