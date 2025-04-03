@@ -63,11 +63,6 @@ func newLogrusLogger(opts Options) (Logger, error) {
 	}
 
 	if opts.JSONFormat {
-		logger.SetFormatter(&logrus.JSONFormatter{
-			TimestampFormat: opts.TimeFormat,
-		})
-		errorLogger.Formatter = &logrus.TextFormatter{
-			TimestampFormat: opts.TimeFormat,
 		customFmt := &customJSONFormatter{
 			JSONFormatter: logrus.JSONFormatter{
 				CallerPrettyfier: defaultCallerPrettyfierFunc,
@@ -75,14 +70,10 @@ func newLogrusLogger(opts Options) (Logger, error) {
 			},
 			location: location,
 		}
+
 		logger.SetFormatter(customFmt)
 		errorLogger.SetFormatter(customFmt)
 	} else {
-		logger.SetFormatter(&logrus.TextFormatter{
-			TimestampFormat: opts.TimeFormat,
-		})
-		errorLogger.Formatter = &logrus.TextFormatter{
-			TimestampFormat: opts.TimeFormat,
 		customFmt := &customTextFormatter{
 			TextFormatter: logrus.TextFormatter{
 				CallerPrettyfier: defaultCallerPrettyfierFunc,
