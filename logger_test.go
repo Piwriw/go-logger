@@ -109,6 +109,19 @@ func TestZapLoggerWithColor(t *testing.T) {
 	logger.Errorf("error:%v", "hello world")
 }
 
+func TestZapLoggerWithTimeZone(t *testing.T) {
+	logger, err := NewLoggerWithType(ZapLogger, WithTimeZone(JSTTime))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warn:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
 func TestLogrusLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger)
 	if err != nil {
@@ -227,6 +240,19 @@ func TestLogrusLoggerWithColor(t *testing.T) {
 	logger.Errorf("error:%v", "hello world")
 }
 
+func TestLogrusLoggerWithTimeZone(t *testing.T) {
+	logger, err := NewLoggerWithType(LogrusLogger, WithTimeZone(JSTTime))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warn:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
 func TestKlogLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(KlogLogger)
 	if err != nil {
@@ -281,6 +307,19 @@ func TestKlogLoggerWithErrorOutPut(t *testing.T) {
 
 func TestKlogLoggerWithErrorOutPutAndFile(t *testing.T) {
 	logger, err := NewLoggerWithType(KlogLogger, WithFileOutput("./app.log"), WithErrorOutPut("./app_error.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warnf:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
+func TestKlogLoggerWithTimeZone(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithTimeZone(JSTTime))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -434,6 +473,19 @@ func TestSlogLoggeWithColorTheme(t *testing.T) {
 		},
 	}
 	logger, err := NewLoggerWithType(SlogLogger, WithColor(), WithFileOutput("./logger.log"), WithColorScheme(theme))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("Info:hello world")
+	logger.Infof("Infof:%v", "hello world")
+	logger.Warn("warn:", "hello world")
+	logger.Warnf("warn:%v", "hello world")
+	logger.Error("error:", "hello world")
+	logger.Errorf("error:%v", "hello world")
+}
+
+func TestSlogLoggeWithTimeZone(t *testing.T) {
+	logger, err := NewLoggerWithType(SlogLogger, WithTimeZone(JSTTime))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -22,25 +22,25 @@ type slogLogger struct {
 
 var _ Logger = (*slogLogger)(nil)
 
-var defaultReplaceAttrFunc = func(groups []string, a slog.Attr) slog.Attr {
-	if a.Key == slog.TimeKey {
-		t := a.Value.Time()
-		a.Value = slog.StringValue(t.Format(time.DateTime))
+var defaultReplaceAttrFunc = func(location *time.Location, format string) func(groups []string, a slog.Attr) slog.Attr {
+	return func(groups []string, a slog.Attr) slog.Attr {
+		if a.Key == slog.TimeKey {
+			t := a.Value.Time().In(location) // 转换时区
+			a.Value = slog.StringValue(t.Format(format))
+		}
+		return a
 	}
-	return a
 }
 
 func newSlogLogger(opts Options) (Logger, error) {
 	var ioWriters []io.Writer
-	if opts.TimeFormat != "" {
-		defaultReplaceAttrFunc = func(groups []string, a slog.Attr) slog.Attr {
-			if a.Key == slog.TimeKey {
-				t := a.Value.Time()
-				a.Value = slog.StringValue(t.Format(opts.TimeFormat))
-			}
-			return a
-		}
+	var location *time.Location
+	location, err := time.LoadLocation(opts.TimeZone)
+	if err != nil {
+		return nil, err
 	}
+	// 创建日志属性替换函数，确保日志时间符合时区
+	replaceAttrFunc := defaultReplaceAttrFunc(location, opts.TimeFormat)
 	// 设置日志轮转
 	if opts.LogRotation != nil {
 		logRotation := initLogRotation(opts.LogRotation.FilePath,
@@ -54,12 +54,12 @@ func newSlogLogger(opts Options) (Logger, error) {
 	handlerOpts := &slog.HandlerOptions{
 		AddSource:   opts.AddSource,
 		Level:       ToSlogLoggerLevel(opts.Level),
-		ReplaceAttr: defaultReplaceAttrFunc,
+		ReplaceAttr: replaceAttrFunc,
 	}
 	handlerErrorOpts := &slog.HandlerOptions{
 		AddSource:   opts.AddSource,
 		Level:       ToSlogLoggerLevel(ErrorLevel),
-		ReplaceAttr: defaultReplaceAttrFunc,
+		ReplaceAttr: replaceAttrFunc,
 	}
 	// 设置控制台和文件输出
 	ioWriters = append(ioWriters, os.Stdout, getOutput(opts.FilePath))
@@ -80,7 +80,7 @@ func newSlogLogger(opts Options) (Logger, error) {
 		logger:          slog.New(handler),
 		errorLogger:     slog.New(errorHandler),
 		level:           opts.Level,
-		replaceAttrFunc: defaultReplaceAttrFunc,
+		replaceAttrFunc: replaceAttrFunc,
 	}
 	// 设置颜色输出
 	if opts.ColorEnabled {

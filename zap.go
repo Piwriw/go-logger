@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -20,6 +21,10 @@ type zapLogger struct {
 var _ Logger = (*zapLogger)(nil)
 
 func newZapLogger(opts Options) (Logger, error) {
+	location, err := time.LoadLocation(opts.TimeZone)
+	if err != nil {
+		return nil, err
+	}
 	// 构建通用的 zap.Config
 	buildConfig := func(level zap.AtomicLevel, disableCaller bool) zap.Config {
 		cfg := zap.NewProductionConfig()
@@ -29,6 +34,12 @@ func newZapLogger(opts Options) (Logger, error) {
 		if !opts.JSONFormat {
 			cfg.Encoding = "console"
 		}
+		// 设置时区
+		timeEncoder := func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+			t = t.In(location) // 确保时间使用 opts.TimeZone
+			enc.AppendString(t.Format(opts.TimeFormat))
+		}
+		cfg.EncoderConfig.EncodeTime = timeEncoder
 		return cfg
 	}
 
@@ -46,10 +57,10 @@ func newZapLogger(opts Options) (Logger, error) {
 		errorCfg.OutputPaths = []string{opts.ErrorOutput}
 	}
 	errorCfg.DisableStacktrace = false
-	if opts.TimeFormat != "" {
-		mainCfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(opts.TimeFormat)
-		errorCfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(opts.TimeFormat)
-	}
+	// if opts.TimeFormat != "" {
+	// 	mainCfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(opts.TimeFormat)
+	// 	errorCfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(opts.TimeFormat)
+	// }
 	logger, err := mainCfg.Build()
 	if err != nil {
 		return nil, err

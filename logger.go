@@ -25,6 +25,35 @@ const (
 	FatalLevel
 )
 
+const (
+	// 常见亚洲时区
+	CSTTime = "Asia/Shanghai" // 中国标准时间 (UTC+8)
+	JSTTime = "Asia/Tokyo"    // 日本标准时间 (UTC+9)
+	ISTTime = "Asia/Kolkata"  // 印度标准时间 (UTC+5:30)
+	KSTTime = "Asia/Seoul"    // 韩国标准时间 (UTC+9)
+
+	// 常见美洲时区
+	ESTTime   = "America/New_York"    // 美国东部标准时间 (UTC-5, 夏令时 UTC-4)
+	CSTUSTime = "America/Chicago"     // 美国中部标准时间 (UTC-6, 夏令时 UTC-5)
+	MSTTime   = "America/Denver"      // 美国山区标准时间 (UTC-7, 夏令时 UTC-6)
+	PSTTime   = "America/Los_Angeles" // 美国太平洋标准时间 (UTC-8, 夏令时 UTC-7)
+	BRTTime   = "America/Sao_Paulo"   // 巴西时间 (UTC-3)
+
+	// 欧洲常见时区
+	UTC     = "UTC"           // 世界协调时间 (UTC+0)
+	GMT     = "Europe/London" // 格林尼治标准时间 (UTC+0, 夏令时 UTC+1)
+	CETTime = "Europe/Paris"  // 欧洲中部时间 (UTC+1, 夏令时 UTC+2)
+	EETTime = "Europe/Athens" // 欧洲东部时间 (UTC+2, 夏令时 UTC+3)
+
+	// 澳大利亚和大洋洲
+	AESTTime = "Australia/Sydney" // 澳大利亚东部标准时间 (UTC+10, 夏令时 UTC+11)
+	NZTime   = "Pacific/Auckland" // 新西兰时间 (UTC+12, 夏令时 UTC+13)
+
+	// 非洲常见时区
+	SATime = "Africa/Johannesburg" // 南非标准时间 (UTC+2)
+	EATime = "Africa/Nairobi"      // 东非时间 (UTC+3)
+)
+
 // Logger 接口定义
 type Logger interface {
 	Debug(args ...any)
@@ -106,6 +135,8 @@ type Options struct {
 	AddSource bool
 	// 格式化日志打印时间
 	TimeFormat string
+	// 时区
+	TimeZone string
 	// ErrorOutput 错误日志输出
 	ErrorOutput string
 	// 日志轮转配置
@@ -150,6 +181,13 @@ func WithAddSource() Option {
 func WithTimeFormat(format string) Option {
 	return func(o *Options) {
 		o.TimeFormat = format
+	}
+}
+
+// WithTimeZone 格式化日志打印时间
+func WithTimeZone(timeZone string) Option {
+	return func(o *Options) {
+		o.TimeZone = timeZone
 	}
 }
 
@@ -199,6 +237,7 @@ func applyOptions(opts ...Option) Options {
 		JSONFormat: defaultJSONFormat,
 		AddSource:  defaultAddSource,
 		TimeFormat: time.DateTime,
+		TimeZone:   time.Local.String(),
 	}
 	for _, opt := range opts {
 		opt(&options)

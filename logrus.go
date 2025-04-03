@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -26,34 +27,60 @@ type logrusLogger struct {
 	colorScheme *ColorScheme
 }
 
+type customTextFormatter struct {
+	logrus.TextFormatter
+	location *time.Location
+}
+
+func (f *customTextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+	entry.Time = entry.Time.In(f.location)
+	return f.TextFormatter.Format(entry)
+}
+
+type customJSONFormatter struct {
+	logrus.JSONFormatter
+	location *time.Location
+}
+
+func (f *customJSONFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+	entry.Time = entry.Time.In(f.location)
+	return f.JSONFormatter.Format(entry)
+}
+
 var _ Logger = (*logrusLogger)(nil)
 
 func newLogrusLogger(opts Options) (Logger, error) {
 	logger := logrus.New()
 	errorLogger := logrus.New()
+	location, err := time.LoadLocation(opts.TimeZone)
+	if err != nil {
+		return nil, err
+	}
 	if opts.AddSource {
 		logger.SetReportCaller(true)
 		errorLogger.SetReportCaller(true)
 	}
 
 	if opts.JSONFormat {
-		logger.SetFormatter(&logrus.JSONFormatter{
-			CallerPrettyfier: defaultCallerPrettyfierFunc,
-			TimestampFormat:  opts.TimeFormat,
-		})
-		errorLogger.Formatter = &logrus.TextFormatter{
-			CallerPrettyfier: defaultCallerPrettyfierFunc,
-			TimestampFormat:  opts.TimeFormat,
+		customFmt := &customJSONFormatter{
+			JSONFormatter: logrus.JSONFormatter{
+				CallerPrettyfier: defaultCallerPrettyfierFunc,
+				TimestampFormat:  opts.TimeFormat,
+			},
+			location: location,
 		}
+		logger.SetFormatter(customFmt)
+		errorLogger.SetFormatter(customFmt)
 	} else {
-		logger.SetFormatter(&logrus.TextFormatter{
-			CallerPrettyfier: defaultCallerPrettyfierFunc,
-			TimestampFormat:  opts.TimeFormat,
-		})
-		errorLogger.Formatter = &logrus.TextFormatter{
-			CallerPrettyfier: defaultCallerPrettyfierFunc,
-			TimestampFormat:  opts.TimeFormat,
+		customFmt := &customTextFormatter{
+			TextFormatter: logrus.TextFormatter{
+				CallerPrettyfier: defaultCallerPrettyfierFunc,
+				TimestampFormat:  opts.TimeFormat,
+			},
+			location: location,
 		}
+		logger.SetFormatter(customFmt)
+		errorLogger.SetFormatter(customFmt)
 	}
 	logger.SetLevel(ToLogrusLoggerLevel(opts.Level))
 	errorLogger.SetLevel(ToLogrusLoggerLevel(ErrorLevel))

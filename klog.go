@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"k8s.io/klog/v2"
 	"os"
+	"time"
 )
 
 type klogLogger struct {
 	level       Level
 	filePath    string
+	timeZone    *time.Location
 	addSource   bool
 	colorScheme *ColorScheme
 	errorOutput string
@@ -18,6 +20,10 @@ type klogLogger struct {
 var _ Logger = (*klogLogger)(nil)
 
 func newKlogLogger(opts Options) (Logger, error) {
+	location, err := time.LoadLocation(opts.TimeZone)
+	if err != nil {
+		return nil, err
+	}
 	if opts.FilePath != "" {
 		klog.SetOutput(getOutput(opts.FilePath))
 	}
@@ -31,18 +37,23 @@ func newKlogLogger(opts Options) (Logger, error) {
 		addSource:   opts.AddSource,
 		errorOutput: opts.ErrorOutput,
 		colorScheme: opts.ColorScheme,
+		timeZone:    location,
 	}, nil
 }
 
 func (l *klogLogger) log(level Level, msg string, args ...any) {
-	// 设置日志级别
 	if l.level > level {
 		return
 	}
+
+	// 追加时间戳到日志消息
+	timestamp := time.Now().In(l.timeZone).Format(time.DateTime)
+	msg = fmt.Sprintf("[%s] %s", timestamp, msg)
+
 	if l.colorScheme != nil {
 		msg = l.colorScheme.Colorize(level, msg)
 	}
-	// 转换 args 为 klog 结构化日志格式
+
 	kvs := make([]any, 0, len(args)*2)
 	for i := 0; i < len(args); i += 2 {
 		if i+1 >= len(args) {
@@ -55,7 +66,6 @@ func (l *klogLogger) log(level Level, msg string, args ...any) {
 		kvs = append(kvs, key, args[i+1])
 	}
 
-	// 根据日志级别调用不同的 klog 方法
 	switch level {
 	case DebugLevel:
 		klog.V(5).Infof(msg, kvs...)
