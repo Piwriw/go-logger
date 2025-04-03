@@ -3,8 +3,10 @@ package logger
 import (
 	"flag"
 	"fmt"
-	"k8s.io/klog/v2"
+	"io"
 	"os"
+
+	"k8s.io/klog/v2"
 	"time"
 )
 
@@ -20,16 +22,43 @@ type klogLogger struct {
 var _ Logger = (*klogLogger)(nil)
 
 func newKlogLogger(opts Options) (Logger, error) {
+	klog.InitFlags(flag.CommandLine)
+	var ioWriters []io.Writer
+
 	location, err := time.LoadLocation(opts.TimeZone)
 	if err != nil {
 		return nil, err
 	}
 	if opts.FilePath != "" {
+		ioWriters = append(ioWriters, getOutput(opts.FilePath))
 		klog.SetOutput(getOutput(opts.FilePath))
+	}
+	var logRotation *LogRotation
+	// 设置日志轮转
+	if opts.LogRotation != nil {
+		logRotation = initLogRotation(opts.LogRotation.FilePath,
+			opts.LogRotation.MaxSize,
+			opts.LogRotation.MaxAge,
+			opts.LogRotation.MaxBackups,
+			opts.LogRotation.Compress)
+		ioWriters = append(ioWriters, logRotation.logger)
+		multiWriter := io.MultiWriter(ioWriters...)
+		klog.SetOutput(multiWriter)
 	}
 	klog.LogToStderr(false)
 	if opts.ErrorOutput != "" {
+		if logRotation != nil {
+			multiWriter := io.MultiWriter(getOutput(opts.ErrorOutput), logRotation.logger)
+			klog.SetOutputBySeverity("ERROR", multiWriter)
+		}
 		klog.SetOutputBySeverity("ERROR", getOutput(opts.ErrorOutput))
+	}
+	if err := flag.CommandLine.Set("one_output", "true"); err != nil {
+		return nil, err
+	}
+
+	if !flag.Parsed() {
+		flag.Parse()
 	}
 	return &klogLogger{
 		level:       opts.Level,
@@ -68,15 +97,31 @@ func (l *klogLogger) log(level Level, msg string, args ...any) {
 
 	switch level {
 	case DebugLevel:
-		klog.V(5).Infof(msg, kvs...)
+		klog.V(5).InfoSDepth(2, msg, kvs...)
 	case InfoLevel:
-		klog.Infof(msg, kvs...)
+		if l.addSource {
+			klog.InfoSDepth(2, msg, kvs...)
+			break
+		}
+		klog.InfoS(msg, kvs...)
 	case WarnLevel:
-		klog.Warningf(msg, kvs...)
+		if l.addSource {
+			klog.WarningfDepth(2, "%s %v", msg, kvs) // Warningf 只能格式化
+			break
+		}
+		klog.Warningf("%s %v", msg, kvs) // Warningf 只能格式化
 	case ErrorLevel:
-		klog.Errorf(msg, kvs...)
+		if l.addSource {
+			klog.ErrorfDepth(2, "%s %v", msg, kvs)
+			break
+		}
+		klog.ErrorS(nil, msg, kvs...)
 	default:
-		klog.Infof(msg, kvs...)
+		if l.addSource {
+			klog.InfoSDepth(2, msg, kvs...)
+			break
+		}
+		klog.InfoS(msg, kvs...)
 	}
 	defer klog.Flush()
 }
@@ -126,19 +171,6 @@ func (l *klogLogger) Fatalf(format string, args ...any) {
 
 func (l *klogLogger) SetLevel(level Level) {
 	l.level = level
-	// klog级别需要通过flags重新设置
-	fs := flag.NewFlagSet("klog", flag.ContinueOnError)
-	klog.InitFlags(fs)
-	switch level {
-	case DebugLevel:
-		fs.Set("v", "4")
-	case InfoLevel:
-		fs.Set("v", "2")
-	case WarnLevel:
-		fs.Set("v", "1")
-	case ErrorLevel, FatalLevel:
-		fs.Set("v", "0")
-	}
 }
 
 func (l *klogLogger) WithFields(fields map[string]any) Logger {

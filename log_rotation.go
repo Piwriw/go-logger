@@ -9,7 +9,6 @@ type LogRotation struct {
 	MaxBackups int    // 保留的旧日志文件的最大数量
 	MaxAge     int    // 保留的旧日志文件的最大天数
 	Compress   bool   // 是否压缩/归档旧日志文件
-
 }
 
 func initLogRotation(filePath string, maxSize int, maxBackups int, maxAge int, isCompress bool) *LogRotation {

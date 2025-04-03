@@ -25,6 +25,7 @@ type logrusLogger struct {
 	level       Level
 	fields      logrus.Fields
 	colorScheme *ColorScheme
+	AddSource   bool
 }
 
 type customTextFormatter struct {
@@ -62,6 +63,11 @@ func newLogrusLogger(opts Options) (Logger, error) {
 	}
 
 	if opts.JSONFormat {
+		logger.SetFormatter(&logrus.JSONFormatter{
+			TimestampFormat: opts.TimeFormat,
+		})
+		errorLogger.Formatter = &logrus.TextFormatter{
+			TimestampFormat: opts.TimeFormat,
 		customFmt := &customJSONFormatter{
 			JSONFormatter: logrus.JSONFormatter{
 				CallerPrettyfier: defaultCallerPrettyfierFunc,
@@ -72,6 +78,11 @@ func newLogrusLogger(opts Options) (Logger, error) {
 		logger.SetFormatter(customFmt)
 		errorLogger.SetFormatter(customFmt)
 	} else {
+		logger.SetFormatter(&logrus.TextFormatter{
+			TimestampFormat: opts.TimeFormat,
+		})
+		errorLogger.Formatter = &logrus.TextFormatter{
+			TimestampFormat: opts.TimeFormat,
 		customFmt := &customTextFormatter{
 			TextFormatter: logrus.TextFormatter{
 				CallerPrettyfier: defaultCallerPrettyfierFunc,
@@ -96,6 +107,9 @@ func newLogrusLogger(opts Options) (Logger, error) {
 	// 设置颜色输出
 	if opts.ColorEnabled {
 		logrusLogger.colorScheme = opts.ColorScheme
+	}
+	if opts.AddSource {
+		logrusLogger.AddSource = true
 	}
 	return logrusLogger, nil
 }
@@ -136,6 +150,7 @@ func FromLogrusLoggerLevel(level logrus.Level) Level {
 
 func (l *logrusLogger) log(level logrus.Level, args ...any) {
 	msg := fmt.Sprint(args...)
+
 	if l.colorScheme != nil {
 		msg = l.colorScheme.Colorize(FromLogrusLoggerLevel(level), msg)
 	}
@@ -143,9 +158,19 @@ func (l *logrusLogger) log(level logrus.Level, args ...any) {
 		l.logger.WithFields(l.fields).Print(msg)
 		return
 	}
+
+	if l.AddSource {
+		l.logger.WithFields(logrus.Fields{
+			"source": getCaller(3),
+		}).Log(level, msg)
+		return
+	}
+
 	l.logger.Log(level, msg)
 	if l.errorLogger != nil && level >= logrus.ErrorLevel {
-		l.errorLogger.Log(level, fmt.Sprint(msg))
+		l.errorLogger.WithFields(logrus.Fields{
+			"source": getCaller(3),
+		}).Log(level, msg)
 	}
 }
 

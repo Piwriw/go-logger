@@ -26,10 +26,10 @@ func newZapLogger(opts Options) (Logger, error) {
 		return nil, err
 	}
 	// 构建通用的 zap.Config
-	buildConfig := func(level zap.AtomicLevel, disableCaller bool) zap.Config {
+	buildConfig := func(level zap.AtomicLevel) zap.Config {
 		cfg := zap.NewProductionConfig()
 		cfg.Level = level
-		cfg.DisableCaller = disableCaller
+		cfg.DisableCaller = true
 		cfg.DisableStacktrace = true // 关闭 error 级别的堆栈打印（zap 默认会打印）
 		if !opts.JSONFormat {
 			cfg.Encoding = "console"
@@ -44,12 +44,12 @@ func newZapLogger(opts Options) (Logger, error) {
 	}
 
 	// 创建主日志配置
-	mainCfg := buildConfig(ToZapLevel(opts.Level), !opts.AddSource)
+	mainCfg := buildConfig(ToZapLevel(opts.Level))
 	if opts.FilePath != "" {
 		mainCfg.OutputPaths = []string{"stderr", opts.FilePath}
 	}
 	// 创建 error 日志配置
-	errorCfg := buildConfig(ToZapLevel(ErrorLevel), !opts.AddSource)
+	errorCfg := buildConfig(ToZapLevel(ErrorLevel))
 	if opts.FilePath != "" {
 		mainCfg.OutputPaths = []string{opts.FilePath}
 	}
@@ -119,6 +119,8 @@ func (l *zapLogger) log(level zapcore.Level, msg string, args ...any) {
 	if l.colorScheme != nil {
 		msg = l.colorScheme.Colorize(FromZapLevel(level), msg)
 	}
+	caller := getCaller(3)
+	msg = "source=" + caller + " " + msg // 直接拼接字符串，减少 fmt.Sprintf
 	switch level {
 	case zap.DebugLevel:
 		l.logger.Debugw(msg, args...)
@@ -134,30 +136,79 @@ func (l *zapLogger) log(level zapcore.Level, msg string, args ...any) {
 	}
 }
 
-func (l *zapLogger) Debug(args ...any) { l.log(zap.DebugLevel, fmt.Sprint(args...)) }
+func (l *zapLogger) Debug(args ...any) {
+	if len(args) == 0 {
+		l.log(zap.DebugLevel, "")
+	} else {
+		l.log(zap.DebugLevel, fmt.Sprint(args...)) // 只调用一次 fmt.Sprint
+	}
+}
 func (l *zapLogger) Debugf(format string, args ...any) {
-	l.log(zap.DebugLevel, fmt.Sprintf(format, args...))
+	if len(args) == 0 {
+		l.log(zap.DebugLevel, format)
+	} else {
+		l.log(zap.DebugLevel, fmt.Sprintf(format, args...)) // 只调用一次 fmt.Sprintf
+	}
 }
-func (l *zapLogger) Info(args ...any) { l.log(zap.InfoLevel, fmt.Sprint(args...)) }
+func (l *zapLogger) Info(args ...any) {
+	if len(args) == 0 {
+		l.log(zap.InfoLevel, "")
+	} else {
+		l.log(zap.InfoLevel, fmt.Sprint(args...))
+	}
+}
 func (l *zapLogger) Infof(format string, args ...any) {
-	l.log(zap.InfoLevel, fmt.Sprintf(format, args...))
+	if len(args) == 0 {
+		l.log(zap.InfoLevel, format)
+	} else {
+		l.log(zap.InfoLevel, fmt.Sprintf(format, args...))
+	}
 }
-func (l *zapLogger) Warn(args ...any) { l.log(zap.WarnLevel, fmt.Sprint(args...)) }
+func (l *zapLogger) Warn(args ...any) {
+	if len(args) == 0 {
+		l.log(zap.WarnLevel, "")
+	} else {
+		l.log(zap.WarnLevel, fmt.Sprint(args...))
+	}
+}
 func (l *zapLogger) Warnf(format string, args ...any) {
-	l.log(zap.WarnLevel, fmt.Sprintf(format, args...))
+	if len(args) == 0 {
+		l.log(zap.WarnLevel, format)
+	} else {
+		l.log(zap.WarnLevel, fmt.Sprintf(format, args...))
+	}
 }
-func (l *zapLogger) Error(args ...any) { l.log(zap.ErrorLevel, fmt.Sprint(args...)) }
+func (l *zapLogger) Error(args ...any) {
+	if len(args) == 0 {
+		l.log(zap.ErrorLevel, "")
+	} else {
+		l.log(zap.ErrorLevel, fmt.Sprint(args...))
+	}
+}
 func (l *zapLogger) Errorf(format string, args ...any) {
-	l.log(zap.ErrorLevel, fmt.Sprintf(format, args...))
+	if len(args) == 0 {
+		l.log(zap.ErrorLevel, format)
+	} else {
+		l.log(zap.ErrorLevel, fmt.Sprintf(format, args...))
+	}
 }
 func (l *zapLogger) Fatal(args ...any) {
-	l.log(zap.ErrorLevel, fmt.Sprint(args...))
+	if len(args) == 0 {
+		l.log(zap.ErrorLevel, "")
+	} else {
+		l.log(zap.ErrorLevel, fmt.Sprint(args...))
+	}
 	os.Exit(1)
 }
 func (l *zapLogger) Fatalf(format string, args ...any) {
-	l.log(zap.ErrorLevel, fmt.Sprintf(format, args...))
+	if len(args) == 0 {
+		l.log(zap.ErrorLevel, format)
+	} else {
+		l.log(zap.ErrorLevel, fmt.Sprintf(format, args...))
+	}
 	os.Exit(1)
 }
+
 func (l *zapLogger) SetLevel(level Level) { /* Zap Logger 的 Level 不能动态修改 */ }
 func (l *zapLogger) WithFields(fields map[string]any) Logger {
 	return &zapLogger{
