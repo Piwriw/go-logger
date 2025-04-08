@@ -5,53 +5,55 @@ import (
 	"time"
 )
 
-// Level 定义日志级别类型
+// Level 定义日志级别类型 / Define log level type
 type Level int
 
 const (
-	defaultLevel       = InfoLevel
-	defaultJSONFormat  = false
-	defaultAddSource   = false
-	defaultLogFile     = "./app.log"
-	defaultTimeFormat  = time.DateTime
-	defaultErrorOutput = "./app_error.log"
+	defaultLevel       = InfoLevel         // 默认日志级别 / Default log level
+	defaultJSONFormat  = false             // 默认非 JSON 格式 / Default is non-JSON format
+	defaultAddSource   = false             // 默认不打印调用信息 / Default: no caller info
+	defaultLogFile     = "./app.log"       // 默认日志文件路径 / Default log file path
+	defaultTimeFormat  = time.DateTime     // 默认时间格式 / Default time format
+	defaultErrorOutput = "./app_error.log" // 默认错误日志文件 / Default error log file
 )
 
+// 日志级别定义 / Log level definitions
 const (
-	DebugLevel Level = iota
-	InfoLevel
-	WarnLevel
-	ErrorLevel
-	FatalLevel
+	DebugLevel Level = iota // 调试级别 / Debug level
+	InfoLevel               // 信息级别 / Info level
+	WarnLevel               // 警告级别 / Warning level
+	ErrorLevel              // 错误级别 / Error level
+	FatalLevel              // 致命错误级别 / Fatal level
 )
 
+// 常见时区定义 / Common timezone constants
 const (
-	// 常见亚洲时区
-	CSTTime = "Asia/Shanghai" // 中国标准时间 (UTC+8)
-	JSTTime = "Asia/Tokyo"    // 日本标准时间 (UTC+9)
-	ISTTime = "Asia/Kolkata"  // 印度标准时间 (UTC+5:30)
-	KSTTime = "Asia/Seoul"    // 韩国标准时间 (UTC+9)
+	// 亚洲时区 / Asia timezones
+	CSTTime = "Asia/Shanghai" // 中国标准时间 / China Standard Time (UTC+8)
+	JSTTime = "Asia/Tokyo"    // 日本时间 / Japan Standard Time (UTC+9)
+	ISTTime = "Asia/Kolkata"  // 印度时间 / India Standard Time (UTC+5:30)
+	KSTTime = "Asia/Seoul"    // 韩国时间 / Korea Standard Time (UTC+9)
 
-	// 常见美洲时区
-	ESTTime   = "America/New_York"    // 美国东部标准时间 (UTC-5, 夏令时 UTC-4)
-	CSTUSTime = "America/Chicago"     // 美国中部标准时间 (UTC-6, 夏令时 UTC-5)
-	MSTTime   = "America/Denver"      // 美国山区标准时间 (UTC-7, 夏令时 UTC-6)
-	PSTTime   = "America/Los_Angeles" // 美国太平洋标准时间 (UTC-8, 夏令时 UTC-7)
-	BRTTime   = "America/Sao_Paulo"   // 巴西时间 (UTC-3)
+	// 美洲时区 / Americas
+	ESTTime   = "America/New_York"    // 美国东部时间 / Eastern Standard Time (UTC-5/UTC-4 DST)
+	CSTUSTime = "America/Chicago"     // 美国中部时间 / Central Standard Time (UTC-6/UTC-5 DST)
+	MSTTime   = "America/Denver"      // 美国山区时间 / Mountain Standard Time (UTC-7/UTC-6 DST)
+	PSTTime   = "America/Los_Angeles" // 美国太平洋时间 / Pacific Standard Time (UTC-8/UTC-7 DST)
+	BRTTime   = "America/Sao_Paulo"   // 巴西时间 / Brazil Time (UTC-3)
 
-	// 欧洲常见时区
-	UTC     = "UTC"           // 世界协调时间 (UTC+0)
-	GMT     = "Europe/London" // 格林尼治标准时间 (UTC+0, 夏令时 UTC+1)
-	CETTime = "Europe/Paris"  // 欧洲中部时间 (UTC+1, 夏令时 UTC+2)
-	EETTime = "Europe/Athens" // 欧洲东部时间 (UTC+2, 夏令时 UTC+3)
+	// 欧洲时区 / Europe
+	UTC     = "UTC"           // 协调世界时 / Coordinated Universal Time (UTC+0)
+	GMT     = "Europe/London" // 英国时间 / Greenwich Mean Time (UTC+0, DST+1)
+	CETTime = "Europe/Paris"  // 中欧时间 / Central European Time (UTC+1/DST+2)
+	EETTime = "Europe/Athens" // 东欧时间 / Eastern European Time (UTC+2/DST+3)
 
-	// 澳大利亚和大洋洲
-	AESTTime = "Australia/Sydney" // 澳大利亚东部标准时间 (UTC+10, 夏令时 UTC+11)
-	NZTime   = "Pacific/Auckland" // 新西兰时间 (UTC+12, 夏令时 UTC+13)
+	// 澳大利亚及大洋洲 / Oceania
+	AESTTime = "Australia/Sydney" // 澳大利亚东部时间 / Australian Eastern Time (UTC+10/DST+11)
+	NZTime   = "Pacific/Auckland" // 新西兰时间 / New Zealand Time (UTC+12/DST+13)
 
-	// 非洲常见时区
-	SATime = "Africa/Johannesburg" // 南非标准时间 (UTC+2)
-	EATime = "Africa/Nairobi"      // 东非时间 (UTC+3)
+	// 非洲时区 / Africa
+	SATime = "Africa/Johannesburg" // 南非时间 / South Africa Time (UTC+2)
+	EATime = "Africa/Nairobi"      // 东非时间 / East Africa Time (UTC+3)
 )
 
 // Logger 接口定义
@@ -75,22 +77,25 @@ type Logger interface {
 	WithFields(fields map[string]any) Logger
 }
 
-// LoggerType 定义支持的Logger类型
+// LoggerType defines the supported logger types
+// LoggerType 定义支持的日志类型
 type LoggerType string
 
 const (
-	SlogLogger   LoggerType = "slog"   // 默认使用slog
-	ZapLogger    LoggerType = "zap"    // 可选
-	LogrusLogger LoggerType = "logrus" // 可选
-	KlogLogger   LoggerType = "klog"
+	SlogLogger   LoggerType = "slog"   // 默认使用slog / Default logger
+	ZapLogger    LoggerType = "zap"    // Zap 日志 / Zap logger
+	LogrusLogger LoggerType = "logrus" // Logrus 日志 / Logrus logger
+	KlogLogger   LoggerType = "klog"   // Kubernetes 日志 / Kubernetes logger
 )
 
-// NewLogger 创建一个新的Logger实例，默认使用slog
+// NewLogger creates a new logger instance with default type
+// NewLogger 创建默认类型的日志实例（使用 slog）
 func NewLogger(options ...Option) (Logger, error) {
 	return NewLoggerWithType(SlogLogger, options...)
 }
 
-// DefaultLogger 创建一个默认的Logger实例，默认使用slog
+// DefaultLogger creates a default logger with pre-defined options
+// DefaultLogger 创建默认配置的日志实例
 func DefaultLogger() (Logger, error) {
 	opts := applyOptions(
 		WithAddSource(),
@@ -102,7 +107,8 @@ func DefaultLogger() (Logger, error) {
 	return newSlogLogger(opts)
 }
 
-// NewLoggerWithType 创建指定类型的Logger实例
+// NewLoggerWithType creates a logger with specified type
+// NewLoggerWithType 创建指定类型的日志实例
 func NewLoggerWithType(loggerType LoggerType, options ...Option) (Logger, error) {
 	opts := applyOptions(options...)
 
@@ -120,35 +126,47 @@ func NewLoggerWithType(loggerType LoggerType, options ...Option) (Logger, error)
 	}
 }
 
-// Option 配置选项
+// Option 是配置函数类型 / Option function type for configuration
 type Option func(*Options)
 
-// Options 包含Logger的配置
+// Options contains logger configuration
+// Options 包含日志配置项
 type Options struct {
+	// Logging level
 	// 设置日志级别
 	Level Level
+	// Use JSON format
 	// 以JSON格式输出日志
 	JSONFormat bool
+	// Log file path
 	// 设置日志文件路径
 	FilePath string
+	// Show caller information
 	// 是否打印日志函数调用信息，默认不打印
 	AddSource bool
+	// Time format
 	// 格式化日志打印时间
 	TimeFormat string
+	// Timezone
 	// 时区
 	TimeZone string
+	// Error log output path
 	// ErrorOutput 错误日志输出
 	ErrorOutput string
+	// Log rotation configuration
 	// 日志轮转配置
 	LogRotation *LogRotation
+	// Enable color output
 	// 设置颜色输出
 	// 开启默认有一个默认的颜色方案，可通过 WithColorScheme 自定义颜色方案
 	ColorEnabled bool
+	// Custom color scheme
 	// 主题颜色方案
 	ColorScheme *ColorScheme
 	// 其他配置项...
 }
 
+// WithLevel sets the logging level
 // WithLevel 设置日志级别
 // 默认为 InfoLevel
 func WithLevel(level Level) Option {
@@ -157,6 +175,7 @@ func WithLevel(level Level) Option {
 	}
 }
 
+// WithJSONFormat enables JSON output format
 // WithJSONFormat 以JSON格式输出日志
 // Klog不支持
 func WithJSONFormat() Option {
@@ -165,6 +184,8 @@ func WithJSONFormat() Option {
 	}
 }
 
+// WithFileOutput sets the log file path
+// Default FilePath is ./app.log
 // WithFileOutput 设置日志文件路径
 // 默认为 ./app.log
 func WithFileOutput(path string) Option {
@@ -176,6 +197,7 @@ func WithFileOutput(path string) Option {
 	}
 }
 
+// WithAddSource enables showing caller information
 // WithAddSource 打印日志函数调用信息
 // 默认为 false，不打印
 // klog 不开启，会打印同一行日志，无法区分日志来源
@@ -185,6 +207,7 @@ func WithAddSource() Option {
 	}
 }
 
+// WithTimeFormat sets the time format
 // WithTimeFormat 格式化日志打印时间
 // 默认为 time.DateTime
 func WithTimeFormat(format string) Option {
@@ -193,6 +216,7 @@ func WithTimeFormat(format string) Option {
 	}
 }
 
+// WithTimeZone sets the timezone
 // WithTimeZone 格式化日志打印时间
 func WithTimeZone(timeZone string) Option {
 	return func(o *Options) {
@@ -200,6 +224,7 @@ func WithTimeZone(timeZone string) Option {
 	}
 }
 
+// WithErrorOutPut sets the error log file path
 // WithErrorOutPut 错误日志输出
 // Zap 默认开启Error日志的堆栈打印，Logrus 默认关闭
 func WithErrorOutPut(path string) Option {
@@ -211,6 +236,7 @@ func WithErrorOutPut(path string) Option {
 	}
 }
 
+// WithLogRotation sets log rotation settings
 // WithLogRotation 日志轮转配置
 // 日志轮转配置，默认不开启
 func WithLogRotation(filePath string, maxSize int, maxBackups int, maxAge int, isCompress bool) Option {
@@ -225,6 +251,7 @@ func WithLogRotation(filePath string, maxSize int, maxBackups int, maxAge int, i
 	}
 }
 
+// WithColor enables color output
 // WithColor 启用颜色输出
 // 启用颜色输出，默认不开启
 // 注意：颜色输出会影响性能，建议在开发环境中使用
@@ -234,6 +261,7 @@ func WithColor() Option {
 	}
 }
 
+// WithColorScheme sets a custom color scheme
 // WithColorScheme 添加主题颜色方案
 // 自定义颜色方案，默认使用默认颜色方案
 // 注意：颜色输出会影响性能，建议在开发环境中使用
@@ -243,6 +271,8 @@ func WithColorScheme(scheme ColorScheme) Option {
 	}
 }
 
+// applyOptions applies all options to the Options struct
+// applyOptions 应用所有配置项
 func applyOptions(opts ...Option) Options {
 	options := Options{
 		Level:      defaultLevel,
