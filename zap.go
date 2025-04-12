@@ -10,10 +10,10 @@ import (
 )
 
 // zapLogger 实现 Logger 接口
-
 type zapLogger struct {
 	logger      *zap.SugaredLogger
 	errorLogger *zap.SugaredLogger
+	maskLogger  *MaskProcessor
 	level       Level
 	colorScheme *ColorScheme
 }
@@ -78,6 +78,10 @@ func newZapLogger(opts Options) (Logger, error) {
 	if opts.ColorEnabled {
 		zapLogger.colorScheme = opts.ColorScheme
 	}
+	// 设置日志脱敏
+	if opts.MaskEnable {
+		zapLogger.maskLogger = NewMaskProcessor(opts.maskRules...)
+	}
 	return zapLogger, nil
 }
 
@@ -121,6 +125,9 @@ func (l *zapLogger) log(level zapcore.Level, msg string, args ...any) {
 	}
 	caller := getCaller(3)
 	msg = "source=" + caller + " " + msg // 直接拼接字符串，减少 fmt.Sprintf
+	if l.maskLogger != nil {
+		args = l.maskLogger.Process(args...)
+	}
 	switch level {
 	case zap.DebugLevel:
 		l.logger.Debugw(msg, args...)
@@ -136,12 +143,8 @@ func (l *zapLogger) log(level zapcore.Level, msg string, args ...any) {
 	}
 }
 
-func (l *zapLogger) Debug(args ...any) {
-	if len(args) == 0 {
-		l.log(zap.DebugLevel, "")
-	} else {
-		l.log(zap.DebugLevel, fmt.Sprint(args...)) // 只调用一次 fmt.Sprint
-	}
+func (l *zapLogger) Debug(msg string, args ...any) {
+	l.log(zap.DebugLevel, msg, args...)
 }
 func (l *zapLogger) Debugf(format string, args ...any) {
 	if len(args) == 0 {
@@ -150,12 +153,8 @@ func (l *zapLogger) Debugf(format string, args ...any) {
 		l.log(zap.DebugLevel, fmt.Sprintf(format, args...)) // 只调用一次 fmt.Sprintf
 	}
 }
-func (l *zapLogger) Info(args ...any) {
-	if len(args) == 0 {
-		l.log(zap.InfoLevel, "")
-	} else {
-		l.log(zap.InfoLevel, fmt.Sprint(args...))
-	}
+func (l *zapLogger) Info(msg string, args ...any) {
+	l.log(zap.InfoLevel, msg, args...)
 }
 func (l *zapLogger) Infof(format string, args ...any) {
 	if len(args) == 0 {
@@ -164,12 +163,8 @@ func (l *zapLogger) Infof(format string, args ...any) {
 		l.log(zap.InfoLevel, fmt.Sprintf(format, args...))
 	}
 }
-func (l *zapLogger) Warn(args ...any) {
-	if len(args) == 0 {
-		l.log(zap.WarnLevel, "")
-	} else {
-		l.log(zap.WarnLevel, fmt.Sprint(args...))
-	}
+func (l *zapLogger) Warn(msg string, args ...any) {
+	l.log(zap.WarnLevel, msg, args...)
 }
 func (l *zapLogger) Warnf(format string, args ...any) {
 	if len(args) == 0 {
@@ -178,12 +173,8 @@ func (l *zapLogger) Warnf(format string, args ...any) {
 		l.log(zap.WarnLevel, fmt.Sprintf(format, args...))
 	}
 }
-func (l *zapLogger) Error(args ...any) {
-	if len(args) == 0 {
-		l.log(zap.ErrorLevel, "")
-	} else {
-		l.log(zap.ErrorLevel, fmt.Sprint(args...))
-	}
+func (l *zapLogger) Error(msg string, args ...any) {
+	l.log(zap.ErrorLevel, msg, args...)
 }
 func (l *zapLogger) Errorf(format string, args ...any) {
 	if len(args) == 0 {
@@ -192,12 +183,8 @@ func (l *zapLogger) Errorf(format string, args ...any) {
 		l.log(zap.ErrorLevel, fmt.Sprintf(format, args...))
 	}
 }
-func (l *zapLogger) Fatal(args ...any) {
-	if len(args) == 0 {
-		l.log(zap.ErrorLevel, "")
-	} else {
-		l.log(zap.ErrorLevel, fmt.Sprint(args...))
-	}
+func (l *zapLogger) Fatal(msg string, args ...any) {
+	l.log(zap.FatalLevel, msg, args...)
 	os.Exit(1)
 }
 func (l *zapLogger) Fatalf(format string, args ...any) {

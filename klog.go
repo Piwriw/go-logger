@@ -17,6 +17,7 @@ type klogLogger struct {
 	addSource   bool
 	colorScheme *ColorScheme
 	errorOutput string
+	maskLogger  *MaskProcessor
 }
 
 var _ Logger = (*klogLogger)(nil)
@@ -60,17 +61,22 @@ func newKlogLogger(opts Options) (Logger, error) {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
-	return &klogLogger{
+	klogLogger := &klogLogger{
 		level:       opts.Level,
 		filePath:    opts.FilePath,
 		addSource:   opts.AddSource,
 		errorOutput: opts.ErrorOutput,
 		colorScheme: opts.ColorScheme,
 		timeZone:    location,
-	}, nil
+	}
+	if opts.MaskEnable {
+		klogLogger.maskLogger = NewMaskProcessor(opts.maskRules...)
+	}
+	return klogLogger, nil
 }
 
 func (l *klogLogger) log(level Level, msg string, args ...any) {
+	defer klog.Flush()
 	if l.level > level {
 		return
 	}
@@ -82,7 +88,9 @@ func (l *klogLogger) log(level Level, msg string, args ...any) {
 	if l.colorScheme != nil {
 		msg = l.colorScheme.Colorize(level, msg)
 	}
-
+	if l.maskLogger != nil {
+		args = l.maskLogger.Process(args...)
+	}
 	kvs := make([]any, 0, len(args)*2)
 	for i := 0; i < len(args); i += 2 {
 		if i+1 >= len(args) {
@@ -123,43 +131,42 @@ func (l *klogLogger) log(level Level, msg string, args ...any) {
 		}
 		klog.InfoS(msg, kvs...)
 	}
-	defer klog.Flush()
 }
 
-func (l *klogLogger) Debug(args ...any) {
-	l.log(DebugLevel, fmt.Sprint(args...))
+func (l *klogLogger) Debug(msg string, args ...any) {
+	l.log(DebugLevel, msg, args...)
 }
 
 func (l *klogLogger) Debugf(format string, args ...any) {
 	l.log(DebugLevel, fmt.Sprintf(format, args...))
 }
 
-func (l *klogLogger) Info(args ...any) {
-	l.log(InfoLevel, fmt.Sprint(args...))
+func (l *klogLogger) Info(msg string, args ...any) {
+	l.log(InfoLevel, msg, args...)
 }
 
 func (l *klogLogger) Infof(format string, args ...any) {
 	l.log(InfoLevel, fmt.Sprintf(format, args...))
 }
 
-func (l *klogLogger) Warn(args ...any) {
-	l.log(WarnLevel, fmt.Sprint(args...))
+func (l *klogLogger) Warn(msg string, args ...any) {
+	l.log(WarnLevel, msg, args...)
 }
 
 func (l *klogLogger) Warnf(format string, args ...any) {
 	l.log(WarnLevel, fmt.Sprintf(format, args...))
 }
 
-func (l *klogLogger) Error(args ...any) {
-	l.log(ErrorLevel, fmt.Sprint(args...))
+func (l *klogLogger) Error(msg string, args ...any) {
+	l.log(ErrorLevel, msg, args...)
 }
 
 func (l *klogLogger) Errorf(format string, args ...any) {
 	l.log(ErrorLevel, fmt.Sprintf(format, args...))
 }
 
-func (l *klogLogger) Fatal(args ...any) {
-	l.log(ErrorLevel, fmt.Sprint(args...))
+func (l *klogLogger) Fatal(msg string, args ...any) {
+	l.log(ErrorLevel, msg, args...)
 	os.Exit(1)
 }
 

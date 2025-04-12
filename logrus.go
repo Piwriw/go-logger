@@ -22,6 +22,7 @@ var defaultCallerPrettyfierFunc = func(f *runtime.Frame) (string, string) {
 type logrusLogger struct {
 	logger      *logrus.Logger
 	errorLogger *logrus.Logger
+	maskLogger  *MaskProcessor
 	level       Level
 	fields      logrus.Fields
 	colorScheme *ColorScheme
@@ -102,6 +103,9 @@ func newLogrusLogger(opts Options) (Logger, error) {
 	if opts.AddSource {
 		logrusLogger.AddSource = true
 	}
+	if opts.MaskEnable {
+		logrusLogger.maskLogger = NewMaskProcessor(opts.maskRules...)
+	}
 	return logrusLogger, nil
 }
 
@@ -139,51 +143,84 @@ func FromLogrusLoggerLevel(level logrus.Level) Level {
 	}
 }
 
-func (l *logrusLogger) log(level logrus.Level, args ...any) {
-	msg := fmt.Sprint(args...)
+func (l *logrusLogger) log(level logrus.Level, msg string, args ...any) {
+	// 创建基础 fields
+	fields := make(logrus.Fields)
 
+	// 添加颜色格式化
 	if l.colorScheme != nil {
 		msg = l.colorScheme.Colorize(FromLogrusLoggerLevel(level), msg)
 	}
+
+	// 添加固定字段
 	if l.fields != nil {
-		l.logger.WithFields(l.fields).Print(msg)
-		return
+		for k, v := range l.fields {
+			fields[k] = v
+		}
 	}
 
+	// 添加调用源信息
 	if l.AddSource {
-		l.logger.WithFields(logrus.Fields{
-			"source": getCaller(3),
-		}).Log(level, msg)
-		return
+		fields["source"] = getCaller(3)
 	}
 
-	l.logger.Log(level, msg)
+	// 处理 KV 参数
+	if len(args) > 0 {
+		// 确保参数是偶数个
+		if len(args)%2 != 0 {
+			args = append(args, "MISSING_VALUE")
+		}
+
+		// 将 KV 参数转换为 fields
+		for i := 0; i < len(args); i += 2 {
+			if key, ok := args[i].(string); ok {
+				// 如果有脱敏处理器，先处理值
+				if l.maskLogger != nil {
+					fields[key] = l.maskLogger.Process(args[i], args[i+1])[1]
+				} else {
+					fields[key] = args[i+1]
+				}
+			}
+		}
+	}
+
+	// 记录主日志
+	entry := l.logger.WithFields(fields)
+	entry.Log(level, msg)
+
+	// 记录错误日志
 	if l.errorLogger != nil && level >= logrus.ErrorLevel {
-		l.errorLogger.WithFields(logrus.Fields{
-			"source": getCaller(3),
-		}).Log(level, msg)
+		errorFields := make(logrus.Fields)
+		for k, v := range fields {
+			errorFields[k] = v
+		}
+		// 确保错误日志有源信息
+		if _, exists := errorFields["source"]; !exists {
+			errorFields["source"] = getCaller(3)
+		}
+		l.errorLogger.WithFields(errorFields).Log(level, msg)
 	}
 }
 
-func (l *logrusLogger) Debug(args ...any) { l.log(logrus.DebugLevel, args...) }
+func (l *logrusLogger) Debug(msg string, args ...any) { l.log(logrus.DebugLevel, msg, args...) }
 func (l *logrusLogger) Debugf(format string, args ...any) {
 	l.log(logrus.DebugLevel, fmt.Sprintf(format, args...))
 }
-func (l *logrusLogger) Info(args ...any) { l.log(logrus.InfoLevel, args...) }
+func (l *logrusLogger) Info(msg string, args ...any) { l.log(logrus.InfoLevel, msg, args...) }
 func (l *logrusLogger) Infof(format string, args ...any) {
 	l.log(logrus.InfoLevel, fmt.Sprintf(format, args...))
 }
-func (l *logrusLogger) Warn(args ...any) {
-	l.log(logrus.WarnLevel, args...)
+func (l *logrusLogger) Warn(msg string, args ...any) {
+	l.log(logrus.WarnLevel, msg, args...)
 }
 func (l *logrusLogger) Warnf(format string, args ...any) {
 	l.log(logrus.WarnLevel, fmt.Sprintf(format, args...))
 }
-func (l *logrusLogger) Error(args ...any) { l.log(logrus.ErrorLevel, args...) }
+func (l *logrusLogger) Error(msg string, args ...any) { l.log(logrus.ErrorLevel, msg, args...) }
 func (l *logrusLogger) Errorf(format string, args ...any) {
 	l.log(logrus.ErrorLevel, fmt.Sprintf(format, args...))
 }
-func (l *logrusLogger) Fatal(args ...any) { l.log(logrus.FatalLevel, args...) }
+func (l *logrusLogger) Fatal(msg string, args ...any) { l.log(logrus.FatalLevel, msg, args...) }
 func (l *logrusLogger) Fatalf(format string, args ...any) {
 	l.log(logrus.FatalLevel, fmt.Sprintf(format, args...))
 }

@@ -13,6 +13,7 @@ import (
 type slogLogger struct {
 	logger          *slog.Logger
 	errorLogger     *slog.Logger
+	maskLogger      *MaskProcessor
 	filePath        string
 	addSource       bool
 	level           Level
@@ -86,6 +87,9 @@ func newSlogLogger(opts Options) (Logger, error) {
 	if opts.ColorEnabled {
 		logger.colorScheme = opts.ColorScheme
 	}
+	if opts.MaskEnable {
+		logger.maskLogger = NewMaskProcessor(opts.maskRules...)
+	}
 	return logger, nil
 }
 
@@ -137,6 +141,9 @@ func (l *slogLogger) log(level slog.Level, msg string, args ...any) {
 		if len(args)%2 != 0 {
 			args = append(args, "!MISSING!")
 		}
+		if l.maskLogger != nil {
+			args = l.maskLogger.Process(args...)
+		}
 		for i := 0; i < len(args); i += 2 {
 			if key, ok := args[i].(string); ok {
 				r.AddAttrs(slog.Any(key, args[i+1]))
@@ -151,40 +158,40 @@ func (l *slogLogger) log(level slog.Level, msg string, args ...any) {
 	}
 }
 
-func (l *slogLogger) Debug(args ...any) {
-	l.log(slog.LevelDebug, fmt.Sprint(args...))
+func (l *slogLogger) Debug(msg string, args ...any) {
+	l.log(slog.LevelDebug, msg, args...)
 }
 
 func (l *slogLogger) Debugf(format string, args ...any) {
 	l.log(slog.LevelDebug, fmt.Sprintf(format, args...))
 }
 
-func (l *slogLogger) Info(args ...any) {
-	l.log(slog.LevelInfo, fmt.Sprint(args...))
+func (l *slogLogger) Info(msg string, args ...any) {
+	l.log(slog.LevelInfo, msg, args...)
 }
 
 func (l *slogLogger) Infof(format string, args ...any) {
 	l.log(slog.LevelInfo, fmt.Sprintf(format, args...))
 }
 
-func (l *slogLogger) Warn(args ...any) {
-	l.log(slog.LevelWarn, fmt.Sprint(args...))
+func (l *slogLogger) Warn(msg string, args ...any) {
+	l.log(slog.LevelWarn, msg, args...)
 }
 
 func (l *slogLogger) Warnf(format string, args ...any) {
 	l.log(slog.LevelWarn, fmt.Sprintf(format, args...))
 }
 
-func (l *slogLogger) Error(args ...any) {
-	l.log(slog.LevelError, fmt.Sprint(args...))
+func (l *slogLogger) Error(msg string, args ...any) {
+	l.log(slog.LevelError, msg, args...)
 }
 
 func (l *slogLogger) Errorf(format string, args ...any) {
 	l.log(slog.LevelError, fmt.Sprintf(format, args...))
 }
 
-func (l *slogLogger) Fatal(args ...any) {
-	l.log(slog.LevelError, fmt.Sprint(args...))
+func (l *slogLogger) Fatal(msg string, args ...any) {
+	l.log(slog.LevelError, msg, args...)
 	os.Exit(1)
 }
 

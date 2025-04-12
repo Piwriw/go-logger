@@ -58,19 +58,19 @@ const (
 
 // Logger 接口定义
 type Logger interface {
-	Debug(args ...any)
+	Debug(msg string, args ...any)
 	Debugf(format string, args ...any)
 
-	Info(args ...any)
+	Info(msg string, args ...any)
 	Infof(format string, args ...any)
 
-	Warn(args ...any)
+	Warn(msg string, args ...any)
 	Warnf(format string, args ...any)
 
-	Error(args ...any)
+	Error(msg string, args ...any)
 	Errorf(format string, args ...any)
 
-	Fatal(args ...any)
+	Fatal(msg string, args ...any)
 	Fatalf(format string, args ...any)
 
 	SetLevel(level Level)
@@ -105,6 +105,17 @@ func DefaultLogger() (Logger, error) {
 		WithErrorOutPut(defaultErrorOutput),
 	)
 	return newSlogLogger(opts)
+}
+
+// DefaultMaskHandler 创建默认的脱敏处理器
+// DefaultMaskHandler creates a default mask handler
+// 目前支持脱敏规则：
+// 1. 密码脱敏
+// 2. 手机号脱敏
+func DefaultMaskHandler() []MaskHandler {
+	return []MaskHandler{
+		&PasswordMark{}, &PhoneMask{},
+	}
 }
 
 // NewLoggerWithType creates a logger with specified type
@@ -163,6 +174,9 @@ type Options struct {
 	// Custom color scheme
 	// 主题颜色方案
 	ColorScheme *ColorScheme
+	//
+	MaskEnable bool
+	maskRules  []MaskHandler
 	// 其他配置项...
 }
 
@@ -268,6 +282,21 @@ func WithColor() Option {
 func WithColorScheme(scheme ColorScheme) Option {
 	return func(o *Options) {
 		o.ColorScheme = &scheme
+	}
+}
+
+// WithMark 启用脱敏
+// 不传入脱敏规则，默认使用默认脱敏规则
+// 目前支持脱敏规则：
+// 1. 密码脱敏
+// 2. 手机号脱敏
+func WithMark(maskRules ...MaskHandler) Option {
+	return func(o *Options) {
+		o.MaskEnable = true
+		if len(maskRules) == 0 {
+			maskRules = append(maskRules, DefaultMaskHandler()...)
+		}
+		o.maskRules = maskRules
 	}
 }
 

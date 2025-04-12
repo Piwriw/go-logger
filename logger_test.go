@@ -122,6 +122,23 @@ func TestZapLoggerWithTimeZone(t *testing.T) {
 	logger.Errorf("error:%v", "hello world")
 }
 
+func TestZapLoggerWithMark(t *testing.T) {
+	logger, err := NewLoggerWithType(ZapLogger, WithMark())
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("xxx", "pwd", 12234)
+}
+
+func TestZapLoggerWithMarkRules(t *testing.T) {
+	logger, err := NewLoggerWithType(ZapLogger, WithMark(&AddressMask{}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("xxx", "pwd", 12234)
+	logger.Info("xxx", "address", "xxxx")
+}
+
 func TestLogrusLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(LogrusLogger)
 	if err != nil {
@@ -253,6 +270,23 @@ func TestLogrusLoggerWithTimeZone(t *testing.T) {
 	logger.Errorf("error:%v", "hello world")
 }
 
+func TestLogrusLoggerWithMark(t *testing.T) {
+	logger, err := NewLoggerWithType(LogrusLogger, WithMark())
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("xxx", "pwd", 12234)
+}
+
+func TestLogrusLoggerWithMarkRules(t *testing.T) {
+	logger, err := NewLoggerWithType(LogrusLogger, WithMark(&AddressMask{}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("xxx", "pwd", 12234)
+	logger.Info("xxx", "address", "xxxx")
+}
+
 func TestKlogLogger(t *testing.T) {
 	logger, err := NewLoggerWithType(KlogLogger)
 	if err != nil {
@@ -357,6 +391,22 @@ func TestKlogLoggerWithTimeZone(t *testing.T) {
 	logger.Warnf("warnf:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("error:%v", "hello world")
+}
+
+func TestKlogLoggerWithMark(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithMark())
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Error("xxx", "pwd", 12234)
+}
+
+func TestKlogLoggerWithMarkRules(t *testing.T) {
+	logger, err := NewLoggerWithType(KlogLogger, WithMark(&AddressMask{}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Error("xxx", "address", "xxxx")
 }
 
 func TestSlogLogger(t *testing.T) {
@@ -493,6 +543,24 @@ func TestSlogLoggeWithColor(t *testing.T) {
 	logger.Errorf("errorf:%v", "hello world")
 }
 
+func BenchmarkOriginalDebug(b *testing.B) {
+	logger, _ := newSlogLogger(Options{Level: DebugLevel})
+	b.ResetTimer()
+	for i := 0; i < 100000; i++ {
+		logger.Info("Info:hello world")
+		logger.Infof("Infof:%v", "hello world")
+		logger.Warn("warn:", "hello world")
+		logger.Warnf("warnf:%v", "hello world")
+		logger.Error("error:", "hello world")
+		logger.Errorf("errorf:%v", "hello world")
+	}
+}
+
+// BenchmarkOriginalDebug-8   	       1	1685798209 ns/op
+// BenchmarkOriginalDebug-8   	1000000000	         0.5068 ns/op
+// BenchmarkOriginalDebug-8   	1000000000	         0.4962 ns/op
+// BenchmarkOriginalDebug-8   	 1144393	      1241 ns/op
+
 func TestSlogLoggeWithColorTheme(t *testing.T) {
 	theme := ColorScheme{
 		CodeType: CodeTypeANSI,
@@ -523,4 +591,36 @@ func TestSlogLoggeWithTimeZone(t *testing.T) {
 	logger.Warnf("warn:%v", "hello world")
 	logger.Error("error:", "hello world")
 	logger.Errorf("error:%v", "hello world")
+}
+
+func TestSlogLoggWithMark(t *testing.T) {
+	logger, err := NewLoggerWithType(SlogLogger, WithMark())
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("xxx", "pwd", 12234)
+}
+
+func TestSlogLoggWithMarkRules(t *testing.T) {
+	logger, err := NewLoggerWithType(SlogLogger, WithMark(&AddressMask{}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	logger.Info("xxx", "pwd", 12234)
+	logger.Info("xxx", "address", "xxxx")
+}
+
+// AddressMask 地址脱敏处理器
+type AddressMask struct{}
+
+func (m *AddressMask) Mask(fieldName string, value any) any {
+	if fieldName == "address" {
+		if s, ok := value.(string); ok {
+			if len(s) > 4 {
+				return s[:4] + "****"
+			}
+			return "****"
+		}
+	}
+	return value
 }
