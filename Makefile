@@ -1,5 +1,3 @@
-.PHONY: lint install-lint goimports install-goimports format clean
-
 # 版本定义
 GOLANGCI_LINT_VERSION ?= v1.61.0
 GOIMPORTS_VERSION ?= v0.25.0
