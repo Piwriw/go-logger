@@ -13,6 +13,7 @@ GOFMT ?= gofmt
 GOLANGCI_LINT ?= $(shell which golangci-lint || echo "$(GOBIN)/golangci-lint")
 
 # 安装 golangci-lint（如果未安装）
+.PHONY: install-lint
 install-lint:
 	@if ! command -v golangci-lint >/dev/null 2>&1; then \
 		echo "Installing golangci-lint $(GOLANGCI_LINT_VERSION)..."; \
@@ -22,6 +23,7 @@ install-lint:
 	fi
 
 # 运行 lint 检查
+.PHONY: lint
 lint: install-lint
 	@echo "Running golangci-lint..."
 	@$(GOLANGCI_LINT) run ./...
@@ -30,6 +32,7 @@ lint: install-lint
 GOIMPORTS ?= $(shell which goimports || echo "$(GOBIN)/goimports")
 
 # 安装 goimports（如果未安装）
+.PHONY: install-goimports
 install-goimports:
 	@if ! command -v goimports >/dev/null 2>&1; then \
 		echo "Installing goimports $(GOIMPORTS_VERSION)..."; \
@@ -39,6 +42,7 @@ install-goimports:
 	fi
 
 # 运行 goimports 和 gofmt 格式化代码
+.PHONY: format
 format:
 	@echo "Running goimports..."
 	@$(GOIMPORTS) -w .
@@ -46,5 +50,6 @@ format:
 	@$(GOFMT) -w .
 	@echo "Code formatting completed."
 # 清理临时文件
+.PHONY: clean
 clean:
 	@rm -rf ./tmp
