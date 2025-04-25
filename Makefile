@@ -10,6 +10,10 @@ GOFMT ?= gofmt
 # 检查是否安装了 golangci-lint
 GOLANGCI_LINT ?= $(shell which golangci-lint || echo "$(GOBIN)/golangci-lint")
 
+
+EXCLUDED_DIRS := vendor
+GO_FILES := $(shell find . -type f -name '*.go' ! -name '*.pb.go' $(foreach dir,$(EXCLUDED_DIRS),-not -path './$(dir)/*'))
+
 # 安装 golangci-lint（如果未安装）
 .PHONY: install-lint
 install-lint:
@@ -43,9 +47,9 @@ install-goimports:
 .PHONY: format
 format:
 	@echo "Running goimports..."
-	@$(GOIMPORTS) -w .
+	@$(GOIMPORTS) -w  $(GO_FILES)
 	@echo "Running gofmt..."
-	@$(GOFMT) -w .
+	@$(GOFMT) -w  $(GO_FILES)
 	@echo "Code formatting completed."
 # 清理临时文件
 .PHONY: clean
